@@ -1,16 +1,13 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 3000;
 
 const types = {
   '.html': 'text/html',
-  '.css': 'text/css',
+  '.css': 'text/css', 
   '.js': 'application/javascript',
-  '.json': 'application/json',
-  '.png': 'image/png',
-  '.jpg': 'image/jpeg',
-  '.svg': 'image/svg+xml'
+  '.json': 'application/json'
 };
 
 http.createServer((req, res) => {
