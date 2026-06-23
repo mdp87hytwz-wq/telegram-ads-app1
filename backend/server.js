@@ -228,3 +228,82 @@ app.get('/api/friends', auth, (req, res) => {
 });
 
 app.listen(PORT, () => console.log(`Telegram Ads backend running on http://localhost:${PORT}`));
+
+// ========== ADMIN ROUTES ==========
+// Simple admin key check (set ADMIN_KEY env variable on Railway)
+function adminAuth(req, res, next) {
+  const key = req.headers['x-admin-key'];
+  if (key !== (process.env.ADMIN_KEY || 'admin123')) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+  next();
+}
+
+app.get('/api/admin/orders', adminAuth, (req, res) => {
+  const data = load();
+  const orders = Object.values(data.ads).sort((a, b) => b.createdAt - a.createdAt);
+  res.json({ orders });
+});
+
+app.get('/api/admin/users', adminAuth, (req, res) => {
+  const data = load();
+  const users = Object.values(data.users);
+  res.json({ users });
+});
+
+app.get('/api/admin/stats', adminAuth, (req, res) => {
+  const data = load();
+  const users = Object.values(data.users);
+  const ads = Object.values(data.ads);
+  const txs = Object.values(data.transactions || {});
+  res.json({
+    totalUsers: users.length,
+    totalAds: ads.length,
+    totalRevenue: ads.reduce((s, a) => s + (a.price || 0), 0),
+    pendingPayments: txs.filter(t => t.status === 'pending').length
+  });
+});
+
+app.post('/api/admin/addbalance', adminAuth, (req, res) => {
+  const { userId, amount, method = 'admin' } = req.body;
+  if (!userId || !amount) return res.status(400).json({ error: 'userId and amount required' });
+  const data = load();
+  if (!data.users[String(userId)]) return res.status(404).json({ error: 'User not found' });
+  data.users[String(userId)].balance = (data.users[String(userId)].balance || 0) + Number(amount);
+  const txId = String(Date.now());
+  data.transactions = data.transactions || {};
+  data.transactions[txId] = { id: txId, userId: String(userId), amount: Number(amount), type: 'topup', method, status: 'completed', createdAt: Date.now() };
+  save(data);
+  res.json({ balance: data.users[String(userId)].balance });
+});
+
+// TON payment endpoint — user submits tx hash, admin verifies
+app.post('/api/budget/ton-request', auth, (req, res) => {
+  const { txHash, amount } = req.body;
+  const data = load();
+  const user = getOrCreateUser(data, req.telegramUser);
+  const txId = String(Date.now());
+  data.transactions = data.transactions || {};
+  data.transactions[txId] = {
+    id: txId,
+    userId: user.id,
+    amount: Number(amount),
+    type: 'topup',
+    method: 'ton',
+    txHash,
+    status: 'pending',
+    createdAt: Date.now()
+  };
+  save(data);
+  // Notify admin via Telegram
+  const adminMsg = `💸 *New TON Payment Request*\n\n👤 User: ${user.firstName} (ID: \`${user.id}\`)\n💰 Amount: ${amount} Toman\n🔗 TX Hash: \`${txHash || 'not provided'}\`\n\nTo confirm: /confirmpay ${user.id} ${amount}`;
+  const token = process.env.BOT_TOKEN;
+  const adminId = process.env.ADMIN_ID || '7606057137';
+  if (token && adminId) {
+    const https = require('https');
+    const body = JSON.stringify({ chat_id: adminId, text: adminMsg, parse_mode: 'Markdown' });
+    const opts = { hostname: 'api.telegram.org', path: `/bot${token}/sendMessage`, method: 'POST', headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body) } };
+    https.request(opts, () => {}).end(body);
+  }
+  res.json({ ok: true, txId, status: 'pending', message: 'Payment request submitted. Admin will confirm shortly.' });
+});
