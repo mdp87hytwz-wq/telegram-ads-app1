@@ -449,7 +449,7 @@ function attachHandlers() {
     navigator.clipboard.writeText(MERCHANT).then(() => toast('Address copied!')).catch(() => toast('Copy failed', true));
   });
   document.getElementById('btn-confirm-ton')?.addEventListener('click', async () => {
-    const amount = Number(document.getElementById('f-amount') ? document.getElementById('f-amount').value : 0) || 1;
+    const amount = state.tonAmount || 1;
     const txHash = document.getElementById('tx-hash-input')?.value.trim() || 'manual_' + Date.now();
     try {
       const r = await Api.post('/api/budget/ton-verify', { amount, boc: txHash });
@@ -503,12 +503,15 @@ async function submitAd() {
 
 async function topUp(method) {
   if (method !== 'ton') { toast('Only TON payment is supported', true); return; }
+  const amount = Number(document.getElementById('f-amount')?.value);
+  if (!amount || amount <= 0) { toast('Enter a valid amount first', true); return; }
+  state.tonAmount = amount;
   state.route = 'ton-payment';
   render();
 }
 
 function viewTonPayment() {
-  const amount = Number(document.getElementById('f-amount') ? document.getElementById('f-amount').value : 0);
+  const amount = state.tonAmount || 0;
   const MERCHANT = 'UQADuFF2Fy7NSrx36D9isoQ0CJx6dcX-0oxHkuRWyLxvng5N';
   return `
     <div class="section">
@@ -530,7 +533,7 @@ function viewTonPayment() {
 }
 
 function viewTonPayment() {
-  const amount = Number(document.getElementById('f-amount') ? document.getElementById('f-amount').value : 0);
+  const amount = state.tonAmount || 0;
   const MERCHANT = 'UQADuFF2Fy7NSrx36D9isoQ0CJx6dcX-0oxHkuRWyLxvng5N';
   return `
     <div class="section">
@@ -618,12 +621,15 @@ async function submitAd() {
 
 async function topUp(method) {
   if (method !== 'ton') { toast('Only TON payment is supported', true); return; }
+  const amount = Number(document.getElementById('f-amount')?.value);
+  if (!amount || amount <= 0) { toast('Enter a valid amount first', true); return; }
+  state.tonAmount = amount;
   state.route = 'ton-payment';
   render();
 }
 
 function viewTonPayment() {
-  const amount = Number(document.getElementById('f-amount') ? document.getElementById('f-amount').value : 0);
+  const amount = state.tonAmount || 0;
   const MERCHANT = 'UQADuFF2Fy7NSrx36D9isoQ0CJx6dcX-0oxHkuRWyLxvng5N';
   return `
     <div class="section">
@@ -645,7 +651,7 @@ function viewTonPayment() {
 }
 
 function viewTonPayment() {
-  const amount = Number(document.getElementById('f-amount') ? document.getElementById('f-amount').value : 0);
+  const amount = state.tonAmount || 0;
   const MERCHANT = 'UQADuFF2Fy7NSrx36D9isoQ0CJx6dcX-0oxHkuRWyLxvng5N';
   return `
     <div class="section">
@@ -720,12 +726,15 @@ async function initTonConnect() {
 
 async function topUp(method) {
   if (method !== 'ton') { toast('Only TON payment is supported', true); return; }
+  const amount = Number(document.getElementById('f-amount')?.value);
+  if (!amount || amount <= 0) { toast('Enter a valid amount first', true); return; }
+  state.tonAmount = amount;
   state.route = 'ton-payment';
   render();
 }
 
 function viewTonPayment() {
-  const amount = Number(document.getElementById('f-amount') ? document.getElementById('f-amount').value : 0);
+  const amount = state.tonAmount || 0;
   const MERCHANT = 'UQADuFF2Fy7NSrx36D9isoQ0CJx6dcX-0oxHkuRWyLxvng5N';
   return `
     <div class="section">
@@ -747,7 +756,7 @@ function viewTonPayment() {
 }
 
 function viewTonPayment() {
-  const amount = Number(document.getElementById('f-amount') ? document.getElementById('f-amount').value : 0);
+  const amount = state.tonAmount || 0;
   const MERCHANT = 'UQADuFF2Fy7NSrx36D9isoQ0CJx6dcX-0oxHkuRWyLxvng5N';
   return `
     <div class="section">
