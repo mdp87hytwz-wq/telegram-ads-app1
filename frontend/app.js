@@ -486,6 +486,7 @@ async function submitAd() {
 }
 
 async function topUp(method) {
+  alert('topUp called: ' + method);
   if (method !== 'ton') { toast('Only TON payment is supported', true); return; }
   const amount = Number(document.getElementById('f-amount').value);
   if (!amount || amount <= 0) { toast('Enter a valid amount first', true); return; }
@@ -557,6 +558,7 @@ async function submitAd() {
 }
 
 async function topUp(method) {
+  alert('topUp called: ' + method);
   if (method !== 'ton') { toast('Only TON payment is supported', true); return; }
   const amount = Number(document.getElementById('f-amount').value);
   if (!amount || amount <= 0) { toast('Enter a valid amount first', true); return; }
@@ -615,6 +617,7 @@ async function initTonConnect() {
 }
 
 async function topUp(method) {
+  alert('topUp called: ' + method);
   if (method !== 'ton') { toast('Only TON payment is supported', true); return; }
   const amount = Number(document.getElementById('f-amount').value);
   if (!amount || amount <= 0) { toast('Enter a valid amount first', true); return; }
