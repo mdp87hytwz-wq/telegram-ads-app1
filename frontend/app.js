@@ -85,6 +85,7 @@ function render() {
   if (state.route === 'dashboard') html = viewDashboard();
   else if (state.route === 'createAd') html = viewCreateAd();
   else if (state.route === 'budget') html = viewBudget();
+  else if (state.route === 'ton-payment') html = viewTonPayment();
   else if (state.route === 'leaderboard') html = viewLeaderboard();
   else if (state.route === 'friends') html = viewFriends();
 
@@ -443,6 +444,21 @@ function attachHandlers() {
   });
 
   // Friends
+  document.getElementById('btn-copy-ton')?.addEventListener('click', () => {
+    const MERCHANT = 'UQADuFF2Fy7NSrx36D9isoQ0CJx6dcX-0oxHkuRWyLxvng5N';
+    navigator.clipboard.writeText(MERCHANT).then(() => toast('Address copied!')).catch(() => toast('Copy failed', true));
+  });
+  document.getElementById('btn-confirm-ton')?.addEventListener('click', async () => {
+    const amount = Number(document.getElementById('f-amount') ? document.getElementById('f-amount').value : 0) || 1;
+    const txHash = document.getElementById('tx-hash-input')?.value.trim() || 'manual_' + Date.now();
+    try {
+      const r = await Api.post('/api/budget/ton-verify', { amount, boc: txHash });
+      state.budget.balance = r.balance;
+      state.route = 'budget';
+      toast('Payment submit! Admin confirm karega.');
+      render();
+    } catch(e) { toast(e.error || 'Error', true); }
+  });
   document.getElementById('btn-copy-ref')?.addEventListener('click', async () => {
     try {
       const r = await Api.get('/api/friends');
@@ -486,8 +502,51 @@ async function submitAd() {
 }
 
 async function topUp(method) {
-  alert('topUp called: ' + method);
   if (method !== 'ton') { toast('Only TON payment is supported', true); return; }
+  state.route = 'ton-payment';
+  render();
+}
+
+function viewTonPayment() {
+  const amount = Number(document.getElementById('f-amount') ? document.getElementById('f-amount').value : 0);
+  const MERCHANT = 'UQADuFF2Fy7NSrx36D9isoQ0CJx6dcX-0oxHkuRWyLxvng5N';
+  return `
+    <div class="section">
+      <button class="back-btn" id="btn-back">&larr; Back</button>
+      <h2 style="margin:16px 0 8px;">💎 TON Payment</h2>
+      <p style="color:#666;font-size:14px;">Apne kisi bhi wallet se ${amount} TON bhejein:</p>
+      <div style="background:#f5f5f5;border-radius:8px;padding:12px;margin:12px 0;word-break:break-all;font-size:12px;font-family:monospace;">${MERCHANT}</div>
+      <button id="btn-copy-ton" class="btn btn-secondary btn-block">📋 Address Copy Karein</button>
+      <div style="margin:16px 0;">
+        <label style="font-size:14px;font-weight:600;">TX Hash (optional):</label>
+        <input id="tx-hash-input" placeholder="Transaction hash paste karein" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-top:8px;box-sizing:border-box;">
+      </div>
+      <button id="btn-confirm-ton" class="btn btn-primary btn-block">✅ Payment Ki — Confirm</button>
+    </div>
+  `;
+}
+  state.route = 'ton-payment';
+  render();
+}
+
+function viewTonPayment() {
+  const amount = Number(document.getElementById('f-amount') ? document.getElementById('f-amount').value : 0);
+  const MERCHANT = 'UQADuFF2Fy7NSrx36D9isoQ0CJx6dcX-0oxHkuRWyLxvng5N';
+  return `
+    <div class="section">
+      <button class="back-btn" id="btn-back">&larr; Back</button>
+      <h2 style="margin:16px 0 8px;">💎 TON Payment</h2>
+      <p style="color:#666;font-size:14px;">Apne kisi bhi wallet se ${amount} TON bhejein:</p>
+      <div style="background:#f5f5f5;border-radius:8px;padding:12px;margin:12px 0;word-break:break-all;font-size:12px;font-family:monospace;">${MERCHANT}</div>
+      <button id="btn-copy-ton" class="btn btn-secondary btn-block">📋 Address Copy Karein</button>
+      <div style="margin:16px 0;">
+        <label style="font-size:14px;font-weight:600;">TX Hash (optional):</label>
+        <input id="tx-hash-input" placeholder="Transaction hash paste karein" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-top:8px;box-sizing:border-box;">
+      </div>
+      <button id="btn-confirm-ton" class="btn btn-primary btn-block">✅ Payment Ki — Confirm</button>
+    </div>
+  `;
+}
   const amount = Number(document.getElementById('f-amount').value);
   if (!amount || amount <= 0) { toast('Enter a valid amount first', true); return; }
   const MERCHANT = 'UQADuFF2Fy7NSrx36D9isoQ0CJx6dcX-0oxHkuRWyLxvng5N';
@@ -558,8 +617,51 @@ async function submitAd() {
 }
 
 async function topUp(method) {
-  alert('topUp called: ' + method);
   if (method !== 'ton') { toast('Only TON payment is supported', true); return; }
+  state.route = 'ton-payment';
+  render();
+}
+
+function viewTonPayment() {
+  const amount = Number(document.getElementById('f-amount') ? document.getElementById('f-amount').value : 0);
+  const MERCHANT = 'UQADuFF2Fy7NSrx36D9isoQ0CJx6dcX-0oxHkuRWyLxvng5N';
+  return `
+    <div class="section">
+      <button class="back-btn" id="btn-back">&larr; Back</button>
+      <h2 style="margin:16px 0 8px;">💎 TON Payment</h2>
+      <p style="color:#666;font-size:14px;">Apne kisi bhi wallet se ${amount} TON bhejein:</p>
+      <div style="background:#f5f5f5;border-radius:8px;padding:12px;margin:12px 0;word-break:break-all;font-size:12px;font-family:monospace;">${MERCHANT}</div>
+      <button id="btn-copy-ton" class="btn btn-secondary btn-block">📋 Address Copy Karein</button>
+      <div style="margin:16px 0;">
+        <label style="font-size:14px;font-weight:600;">TX Hash (optional):</label>
+        <input id="tx-hash-input" placeholder="Transaction hash paste karein" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-top:8px;box-sizing:border-box;">
+      </div>
+      <button id="btn-confirm-ton" class="btn btn-primary btn-block">✅ Payment Ki — Confirm</button>
+    </div>
+  `;
+}
+  state.route = 'ton-payment';
+  render();
+}
+
+function viewTonPayment() {
+  const amount = Number(document.getElementById('f-amount') ? document.getElementById('f-amount').value : 0);
+  const MERCHANT = 'UQADuFF2Fy7NSrx36D9isoQ0CJx6dcX-0oxHkuRWyLxvng5N';
+  return `
+    <div class="section">
+      <button class="back-btn" id="btn-back">&larr; Back</button>
+      <h2 style="margin:16px 0 8px;">💎 TON Payment</h2>
+      <p style="color:#666;font-size:14px;">Apne kisi bhi wallet se ${amount} TON bhejein:</p>
+      <div style="background:#f5f5f5;border-radius:8px;padding:12px;margin:12px 0;word-break:break-all;font-size:12px;font-family:monospace;">${MERCHANT}</div>
+      <button id="btn-copy-ton" class="btn btn-secondary btn-block">📋 Address Copy Karein</button>
+      <div style="margin:16px 0;">
+        <label style="font-size:14px;font-weight:600;">TX Hash (optional):</label>
+        <input id="tx-hash-input" placeholder="Transaction hash paste karein" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-top:8px;box-sizing:border-box;">
+      </div>
+      <button id="btn-confirm-ton" class="btn btn-primary btn-block">✅ Payment Ki — Confirm</button>
+    </div>
+  `;
+}
   const amount = Number(document.getElementById('f-amount').value);
   if (!amount || amount <= 0) { toast('Enter a valid amount first', true); return; }
   const MERCHANT = 'UQADuFF2Fy7NSrx36D9isoQ0CJx6dcX-0oxHkuRWyLxvng5N';
@@ -617,8 +719,51 @@ async function initTonConnect() {
 }
 
 async function topUp(method) {
-  alert('topUp called: ' + method);
   if (method !== 'ton') { toast('Only TON payment is supported', true); return; }
+  state.route = 'ton-payment';
+  render();
+}
+
+function viewTonPayment() {
+  const amount = Number(document.getElementById('f-amount') ? document.getElementById('f-amount').value : 0);
+  const MERCHANT = 'UQADuFF2Fy7NSrx36D9isoQ0CJx6dcX-0oxHkuRWyLxvng5N';
+  return `
+    <div class="section">
+      <button class="back-btn" id="btn-back">&larr; Back</button>
+      <h2 style="margin:16px 0 8px;">💎 TON Payment</h2>
+      <p style="color:#666;font-size:14px;">Apne kisi bhi wallet se ${amount} TON bhejein:</p>
+      <div style="background:#f5f5f5;border-radius:8px;padding:12px;margin:12px 0;word-break:break-all;font-size:12px;font-family:monospace;">${MERCHANT}</div>
+      <button id="btn-copy-ton" class="btn btn-secondary btn-block">📋 Address Copy Karein</button>
+      <div style="margin:16px 0;">
+        <label style="font-size:14px;font-weight:600;">TX Hash (optional):</label>
+        <input id="tx-hash-input" placeholder="Transaction hash paste karein" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-top:8px;box-sizing:border-box;">
+      </div>
+      <button id="btn-confirm-ton" class="btn btn-primary btn-block">✅ Payment Ki — Confirm</button>
+    </div>
+  `;
+}
+  state.route = 'ton-payment';
+  render();
+}
+
+function viewTonPayment() {
+  const amount = Number(document.getElementById('f-amount') ? document.getElementById('f-amount').value : 0);
+  const MERCHANT = 'UQADuFF2Fy7NSrx36D9isoQ0CJx6dcX-0oxHkuRWyLxvng5N';
+  return `
+    <div class="section">
+      <button class="back-btn" id="btn-back">&larr; Back</button>
+      <h2 style="margin:16px 0 8px;">💎 TON Payment</h2>
+      <p style="color:#666;font-size:14px;">Apne kisi bhi wallet se ${amount} TON bhejein:</p>
+      <div style="background:#f5f5f5;border-radius:8px;padding:12px;margin:12px 0;word-break:break-all;font-size:12px;font-family:monospace;">${MERCHANT}</div>
+      <button id="btn-copy-ton" class="btn btn-secondary btn-block">📋 Address Copy Karein</button>
+      <div style="margin:16px 0;">
+        <label style="font-size:14px;font-weight:600;">TX Hash (optional):</label>
+        <input id="tx-hash-input" placeholder="Transaction hash paste karein" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-top:8px;box-sizing:border-box;">
+      </div>
+      <button id="btn-confirm-ton" class="btn btn-primary btn-block">✅ Payment Ki — Confirm</button>
+    </div>
+  `;
+}
   const amount = Number(document.getElementById('f-amount').value);
   if (!amount || amount <= 0) { toast('Enter a valid amount first', true); return; }
 
