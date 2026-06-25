@@ -348,3 +348,4 @@ app.post('/api/budget/ton-verify', auth, async (req, res) => {
 
   res.json({ ok: true, balance: data.users[String(user.id)].balance });
 });
+// redeploy Wed Jun 24 19:33:56 PDT 2026
