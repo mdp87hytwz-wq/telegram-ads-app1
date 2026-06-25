@@ -489,45 +489,17 @@ async function submitAd() {
   }
 }
 
-let tonConnectUI = null;
-
-async function initTonConnect() {
-  if (tonConnectUI) return;
-  tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-    manifestUrl: window.location.origin + '/tonconnect-manifest.json',
-  });
-}
-
 async function topUp(method) {
-  if (method !== 'ton') { toast('Only TON payment is supported', true); return; }
   const amount = Number(document.getElementById('f-amount').value);
   if (!amount || amount <= 0) { toast('Enter a valid amount first', true); return; }
-
-  await initTonConnect();
-
-  // TON amount (1 TON = 1e9 nanoTON)
-  const nanoAmount = String(Math.floor(amount * 1e9));
-  const MERCHANT = 'UQADuFF2Fy7NSrx36D9isoQ0CJx6dcX-0oxHkuRWyLxvng5N';
-
-  const tx = {
-    validUntil: Math.floor(Date.now() / 1000) + 600,
-    messages: [{ address: MERCHANT, amount: nanoAmount }]
-  };
-
   try {
-    toast('Opening TON wallet...');
-    const result = await tonConnectUI.sendTransaction(tx);
-    toast('Verifying payment...');
-    const r = await Api.post('/api/budget/ton-verify', { amount, boc: result.boc });
+    const r = await Api.post('/api/budget/topup', { amount, method });
     state.budget.balance = r.balance;
-    toast('Payment successful! Balance updated.');
+    state.budget.transactions.unshift(r.transaction);
+    toast(`Added ${amount.toLocaleString()} Toman via ${method}`);
     render();
   } catch (e) {
-    if (e?.message?.includes('User rejected')) {
-      toast('Payment cancelled', true);
-    } else {
-      toast(e?.error || 'Payment failed', true);
-    }
+    toast(e.error || 'Payment failed', true);
   }
 }
 
