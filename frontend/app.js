@@ -492,6 +492,7 @@ async function initTonConnect() {
   tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
     manifestUrl: 'https://mdp87hytwz-wq.github.io/telegram-ads-app1/frontend/tonconnect-manifest.json',
   });
+  console.log('TON Connect initialized:', tonConnectUI);
 }
 
 async function topUp(method) {
@@ -519,10 +520,11 @@ async function topUp(method) {
     toast('Payment successful! Balance updated.');
     render();
   } catch (e) {
+    console.error('Payment error:', e);
     if (e?.message?.includes('User rejected')) {
       toast('Payment cancelled', true);
     } else {
-      toast(e?.error || 'Payment failed', true);
+      toast(e?.message || e?.error || 'Payment failed: ' + JSON.stringify(e), true);
     }
   }
 }
