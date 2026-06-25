@@ -485,6 +485,54 @@ async function submitAd() {
   }
 }
 
+async function topUp(method) {
+  if (method !== 'ton') { toast('Only TON payment is supported', true); return; }
+  const amount = Number(document.getElementById('f-amount').value);
+  if (!amount || amount <= 0) { toast('Enter a valid amount first', true); return; }
+  const MERCHANT = 'UQADuFF2Fy7NSrx36D9isoQ0CJx6dcX-0oxHkuRWyLxvng5N';
+  const nanoAmount = Math.floor(amount * 1e9);
+  const deepLink = 'https://app.tonkeeper.com/transfer/' + MERCHANT + '?amount=' + nanoAmount + '&text=TelegramAds';
+  toast('Opening Tonkeeper...');
+  if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openLink) {
+    window.Telegram.WebApp.openLink(deepLink);
+  } else {
+    window.open(deepLink, '_blank');
+  }
+}
+
+async function submitAd() {
+  const title = document.getElementById('f-title').value.trim();
+  const text = document.getElementById('f-text').value.trim();
+  const url = document.getElementById('f-url').value.trim();
+
+  if (!title || !text || !url) {
+    toast('Please fill in title, text and the promote URL', true);
+    return;
+  }
+
+  const fd = new FormData();
+  fd.append('title', title);
+  fd.append('text', text);
+  fd.append('promoteUrl', url);
+  fd.append('targetType', state.targetType);
+  fd.append('targetChannels', JSON.stringify([...state.selectedChannels]));
+  fd.append('dailyViewLimit', state.dailyViewLimit);
+  fd.append('viewCount', state.viewCount || 0);
+  fd.append('plan', state.plan);
+  if (state.mediaFile) fd.append('media', state.mediaFile);
+
+  try {
+    const r = await Api.postForm('/api/ads', fd);
+    toast('Ad created successfully');
+    state.ads.unshift(r.ad);
+    state.selectedChannels = new Set();
+    state.mediaFile = null;
+    go('dashboard');
+  } catch (e) {
+    toast(e.error || 'Could not create ad', true);
+  }
+}
+
 let tonConnectUI = null;
 
 async function initTonConnect() {
