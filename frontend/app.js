@@ -490,6 +490,77 @@ async function topUp(method) {
   const amount = Number(document.getElementById('f-amount').value);
   if (!amount || amount <= 0) { toast('Enter a valid amount first', true); return; }
   const MERCHANT = 'UQADuFF2Fy7NSrx36D9isoQ0CJx6dcX-0oxHkuRWyLxvng5N';
+  
+  // Show payment dialog
+  const dialog = document.createElement('div');
+  dialog.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;';
+  dialog.innerHTML = `
+    <div style="background:#fff;border-radius:16px;padding:24px;width:100%;max-width:400px;">
+      <h3 style="margin:0 0 16px;font-size:18px;">💎 TON Payment</h3>
+      <p style="margin:0 0 8px;font-size:14px;color:#666;">Send exactly <b>${amount} TON</b> to:</p>
+      <div style="background:#f5f5f5;border-radius:8px;padding:12px;margin-bottom:16px;word-break:break-all;font-size:12px;font-family:monospace;">${MERCHANT}</div>
+      <button onclick="navigator.clipboard.writeText('${MERCHANT}').then(()=>this.textContent='Copied!')" style="width:100%;padding:10px;background:#0088cc;color:#fff;border:none;border-radius:8px;margin-bottom:16px;font-size:14px;cursor:pointer;">📋 Copy Address</button>
+      <p style="margin:0 0 8px;font-size:14px;color:#666;">Payment karne ke baad TX Hash paste karein:</p>
+      <input id="tx-hash-input" placeholder="TX Hash (optional)" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-bottom:16px;box-sizing:border-box;font-size:13px;">
+      <button id="confirm-payment-btn" style="width:100%;padding:12px;background:#27ae60;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;">✅ Payment Ki — Confirm</button>
+      <button onclick="this.closest('[style*=fixed]').remove()" style="width:100%;padding:10px;background:#f5f5f5;color:#333;border:none;border-radius:8px;margin-top:8px;font-size:14px;cursor:pointer;">Cancel</button>
+    </div>
+  `;
+  document.body.appendChild(dialog);
+  
+  dialog.querySelector('#confirm-payment-btn').addEventListener('click', async () => {
+    const txHash = dialog.querySelector('#tx-hash-input').value.trim() || 'manual_' + Date.now();
+    dialog.remove();
+    toast('Payment verify ho rahi hai...');
+    try {
+      const r = await Api.post('/api/budget/ton-verify', { amount, boc: txHash });
+      state.budget.balance = r.balance;
+      toast('Payment submit! Admin confirm karega.');
+      render();
+    } catch(e) {
+      toast(e.error || 'Error', true);
+    }
+  });
+}
+
+async function submitAd() {
+  const title = document.getElementById('f-title').value.trim();
+  const text = document.getElementById('f-text').value.trim();
+  const url = document.getElementById('f-url').value.trim();
+
+  if (!title || !text || !url) {
+    toast('Please fill in title, text and the promote URL', true);
+    return;
+  }
+
+  const fd = new FormData();
+  fd.append('title', title);
+  fd.append('text', text);
+  fd.append('promoteUrl', url);
+  fd.append('targetType', state.targetType);
+  fd.append('targetChannels', JSON.stringify([...state.selectedChannels]));
+  fd.append('dailyViewLimit', state.dailyViewLimit);
+  fd.append('viewCount', state.viewCount || 0);
+  fd.append('plan', state.plan);
+  if (state.mediaFile) fd.append('media', state.mediaFile);
+
+  try {
+    const r = await Api.postForm('/api/ads', fd);
+    toast('Ad created successfully');
+    state.ads.unshift(r.ad);
+    state.selectedChannels = new Set();
+    state.mediaFile = null;
+    go('dashboard');
+  } catch (e) {
+    toast(e.error || 'Could not create ad', true);
+  }
+}
+
+async function topUp(method) {
+  if (method !== 'ton') { toast('Only TON payment is supported', true); return; }
+  const amount = Number(document.getElementById('f-amount').value);
+  if (!amount || amount <= 0) { toast('Enter a valid amount first', true); return; }
+  const MERCHANT = 'UQADuFF2Fy7NSrx36D9isoQ0CJx6dcX-0oxHkuRWyLxvng5N';
   const nanoAmount = Math.floor(amount * 1e9);
   const deepLink = 'https://app.tonkeeper.com/transfer/' + MERCHANT + '?amount=' + nanoAmount + '&text=TelegramAds';
   toast('Opening Tonkeeper...');
