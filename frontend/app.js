@@ -494,7 +494,7 @@ let tonConnectUI = null;
 async function initTonConnect() {
   if (tonConnectUI) return;
   tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-    manifestUrl: window.location.origin + '/tonconnect-manifest.json',
+    manifestUrl: 'https://mdp87hytwz-wq.github.io/telegram-ads-app1/frontend/tonconnect-manifest.json',
   });
 }
 
