@@ -276,11 +276,7 @@ function viewBudget() {
   if (!state.budget.transactions.length && state.budget.balance === 0) loadBudget().then(render);
 
   const methods = [
-    { id: 'card', icon: '﷼', label: 'Card to Card Payment', fee: 'No Transaction Fee' },
-    { id: 'ton', icon: '🔷', label: 'Pay with Ton' },
-    { id: 'usdt_ton', icon: '💎', label: 'Pay with USDT (TON)' },
-    { id: 'usdt_trc20', icon: '💵', label: 'Pay with USDT (TRC20)' },
-    { id: 'stars', icon: '⭐', label: 'Pay with Stars' }
+    { id: 'ton', icon: '💎', label: 'Pay with TON' }
   ];
 
   return `
