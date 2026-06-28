@@ -204,7 +204,7 @@ function viewCreateAd() {
         <div id="channel-tags" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;">
           ${[...state.selectedChannels].map(ch => '<span style="background:#0088cc;color:#fff;border-radius:20px;padding:4px 12px;font-size:13px;display:inline-flex;align-items:center;gap:6px;">' + ch + '<span onclick="removeChannel(\'' + ch + '\')" style="cursor:pointer;font-size:18px;line-height:1;">&times;</span></span>').join('')}
         </div>
-        <input type="text" id="f-channel-url" placeholder="t.me/channel — Press Enter to add" />
+        <input type="text" id="f-channel-url" placeholder="Add channel URL, press Enter" />
       </div>
 
       <div class="card">
