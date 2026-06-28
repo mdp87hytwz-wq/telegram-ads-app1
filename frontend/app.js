@@ -420,11 +420,22 @@ function attachHandlers() {
   document.getElementById('btn-edit-image')?.addEventListener('click', () => toast('Hook this up to your AI image-edit endpoint'));
   document.getElementById('btn-generate-image')?.addEventListener('click', () => toast('Hook this up to your AI image-generation endpoint'));
 
+  document.getElementById('f-channel-url')?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const val = e.target.value.trim();
+      if (val) {
+        state.selectedChannels.add(val);
+        e.target.value = '';
+        render();
+      }
+    }
+  });
+
   document.querySelectorAll('[data-channel]').forEach(el => {
     el.addEventListener('click', () => {
       const id = el.dataset.channel;
       if (state.selectedChannels.has(id)) state.selectedChannels.delete(id); else state.selectedChannels.add(id);
-      // Update UI without re-render
       el.classList.toggle('selected', state.selectedChannels.has(id));
     });
   });
