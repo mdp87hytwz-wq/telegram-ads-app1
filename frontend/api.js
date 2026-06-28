@@ -8,10 +8,14 @@ const API_BASE = window.APP_CONFIG.API_BASE_URL;
 
 function authHeaders() {
   const initData = tg ? tg.initData : '';
-  const userId = tg ? (tg.initDataUnsafe?.user?.id || '') : '';
+  const tgUser = tg ? (tg.initDataUnsafe?.user || null) : null;
+  const savedUser = JSON.parse(localStorage.getItem('tg_user') || 'null');
+  const user = tgUser || savedUser;
+  const userId = user ? String(user.id) : '';
   return { 
     'X-Telegram-Init-Data': initData,
-    'X-Telegram-User-Id': String(userId)
+    'X-Telegram-User-Id': userId,
+    'X-Telegram-User-Data': user ? JSON.stringify(user) : ''
   };
 }
 
