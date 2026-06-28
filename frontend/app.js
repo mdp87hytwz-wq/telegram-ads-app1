@@ -64,6 +64,12 @@ async function loadChannels() {
 async function loadBudget() {
   try {
     state.budget = await Api.get('/api/budget');
+    // Update balance display without full re-render
+    const balEl = document.querySelector('.amount');
+    if (balEl && document.activeElement && document.activeElement.tagName === 'INPUT') {
+      balEl.textContent = state.budget.balance.toLocaleString() + ' TON';
+      return;
+    }
   } catch (e) { console.error(e); }
 }
 
