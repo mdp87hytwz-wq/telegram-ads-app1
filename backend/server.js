@@ -30,21 +30,21 @@ const upload = multer({
 
 // --- Auth middleware: verifies the Telegram WebApp initData sent by the frontend ---
 function auth(req, res, next) {
-  if (SKIP_AUTH) {
-    const initData = req.headers['x-telegram-init-data'];
-    if (initData) {
-      try {
-        const params = new URLSearchParams(initData);
-        const userRaw = params.get('user');
-        if (userRaw) {
-          const user = JSON.parse(userRaw);
-          if (user && user.id) {
-            req.telegramUser = { id: String(user.id), first_name: user.first_name || 'User', username: user.username || '' };
-            return next();
-          }
+  const initData0 = req.headers['x-telegram-init-data'];
+  if (initData0) {
+    try {
+      const params0 = new URLSearchParams(initData0);
+      const userRaw0 = params0.get('user');
+      if (userRaw0) {
+        const user0 = JSON.parse(userRaw0);
+        if (user0 && user0.id) {
+          req.telegramUser = { id: String(user0.id), first_name: user0.first_name || 'User', username: user0.username || '' };
+          return next();
         }
-      } catch(e) {}
-    }
+      }
+    } catch(e) {}
+  }
+  if (SKIP_AUTH) {
     req.telegramUser = { id: 'dev-user', first_name: 'Dev', username: 'dev_user' };
     return next();
   }
