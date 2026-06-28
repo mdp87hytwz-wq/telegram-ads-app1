@@ -202,3 +202,9 @@ textarea {
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
 }
+.balance-row input,
+.section input,
+.section textarea {
+  position: relative;
+  z-index: 999;
+}
