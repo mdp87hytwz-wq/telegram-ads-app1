@@ -31,6 +31,15 @@ const upload = multer({
 // --- Auth middleware: verifies the Telegram WebApp initData sent by the frontend ---
 function auth(req, res, next) {
   if (SKIP_AUTH) {
+    // Try to get real user from initData even in skip mode
+    const initData = req.headers['x-telegram-init-data'];
+    if (initData) {
+      const result = verifyInitData(initData, BOT_TOKEN);
+      if (result.ok) {
+        req.telegramUser = result.user;
+        return next();
+      }
+    }
     req.telegramUser = { id: 'dev-user', first_name: 'Dev', username: 'dev_user' };
     return next();
   }
