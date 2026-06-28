@@ -543,4 +543,17 @@ async function topUp(method) {
   };
 }
 
+// Fix keyboard hide on scroll
+document.addEventListener('focusin', function(e) {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+    document.body.style.overflow = 'hidden';
+    setTimeout(() => { e.target.scrollIntoView({behavior: 'smooth', block: 'center'}); }, 300);
+  }
+});
+document.addEventListener('focusout', function(e) {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+    document.body.style.overflow = '';
+  }
+});
+
 bootstrap();
