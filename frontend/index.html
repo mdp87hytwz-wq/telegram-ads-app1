@@ -12,6 +12,17 @@ input, textarea {
   font-size: 16px !important;
 }
 </style>
+<script>
+window.addEventListener('load', function() {
+  var tg = window.Telegram && window.Telegram.WebApp;
+  if (tg) {
+    tg.ready();
+    tg.expand();
+    try { tg.disableVerticalSwipes(); } catch(e) {}
+    try { tg.setHeaderColor("#ffffff"); } catch(e) {}
+  }
+});
+</script>
 </head>
 <body>
 <div id="app"></div>
