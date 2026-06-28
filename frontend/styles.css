@@ -189,3 +189,16 @@ table.tx-table td { padding: 10px 4px; border-bottom: 1px solid #f3f3f3; }
 }
 .rank { width: 28px; font-weight: 700; color: var(--text-muted); }
 .empty-small { text-align: center; color: var(--text-muted); padding: 40px 16px; }
+
+
+/* Keyboard fix for Telegram Mini App */
+input[type="text"],
+input[type="number"],
+input[type="email"],
+textarea {
+  font-size: 16px !important;
+  -webkit-user-select: text !important;
+  user-select: text !important;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
