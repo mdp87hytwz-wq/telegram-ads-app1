@@ -135,7 +135,7 @@ function viewDashboard() {
           <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--text-muted);">
             <span>Views: ${ad.viewCount}</span>
             <span>Plan: ${ad.plan.replace(/_/g, ' ')}</span>
-            <span>${ad.price.toLocaleString()} Toman</span>
+            <span>${ad.price.toLocaleString()} TON</span>
           </div>
         </div>
       `).join('')}
@@ -264,7 +264,7 @@ function viewCreateAd() {
 
       <div class="card" style="margin-bottom:18px;display:flex;justify-content:space-between;align-items:center;">
         <span>Estimated price</span>
-        <strong id="price-display">${state.price.toLocaleString()} Toman</strong>
+        <strong id="price-display">${state.price.toLocaleString()} TON</strong>
       </div>
 
       <button class="btn btn-primary btn-block" id="btn-submit-ad">Create Ad</button>
@@ -283,7 +283,7 @@ function viewBudget() {
     ${topBar(true)}
     <div class="section">
       <div class="balance-row">
-        <div>Balance : <span class="amount">${state.budget.balance.toLocaleString()} Toman</span></div>
+        <div>Balance : <span class="amount">${state.budget.balance.toLocaleString()} TON</span></div>
         <button class="btn btn-primary" id="btn-transmit">Transmit</button>
       </div>
 
@@ -335,7 +335,7 @@ function viewLeaderboard() {
             <div class="name">${escapeHtml(u.name)}</div>
             <div class="sub">${u.adsCount} ads</div>
           </div>
-          <strong>${u.totalSpent.toLocaleString()} Toman</strong>
+          <strong>${u.totalSpent.toLocaleString()} TON</strong>
         </div>
       `).join('') : `<div class="empty-small">No activity yet — be the first to spend on an ad!</div>`}
     </div>`;
@@ -431,7 +431,7 @@ function attachHandlers() {
     state.viewCount = e.target.value;
     await refreshPrice();
     const priceEl = document.getElementById('price-display');
-    if (priceEl) priceEl.textContent = `${state.price.toLocaleString()} Toman`;
+    if (priceEl) priceEl.textContent = `${state.price.toLocaleString()} TON`;
   });
 
   document.getElementById('btn-submit-ad')?.addEventListener('click', submitAd);
@@ -504,9 +504,9 @@ async function topUp(method) {
     '<img src="' + qrUrl + '" style="width:160px;height:160px;border-radius:8px;margin-bottom:12px;">' +
     '<div style="background:#f5f5f5;border-radius:8px;padding:10px;margin-bottom:12px;word-break:break-all;font-size:11px;font-family:monospace;text-align:left;">' + MERCHANT + '</div>' +
     '<button id="ton-copy-btn" style="width:100%;padding:10px;background:#0088cc;color:#fff;border:none;border-radius:8px;margin-bottom:8px;font-size:14px;font-weight:600;cursor:pointer;">📋 Copy Address</button>' +
-    '<p style="color:#666;font-size:12px;margin:8px 0 4px;text-align:left;">Payment ke baad TX Hash paste karein:</p>' +
+    '<p style="color:#666;font-size:12px;margin:8px 0 4px;text-align:left;">Paste TX Hash after payment:</p>' +
     '<input id="ton-tx-input" placeholder="TX Hash (optional)" style="width:100%;padding:9px;border:1px solid #ddd;border-radius:8px;margin-bottom:10px;box-sizing:border-box;font-size:12px;">' +
-    '<button id="ton-confirm-btn" style="width:100%;padding:12px;background:#27ae60;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;">✅ Payment Ki — Submit</button>' +
+    '<button id="ton-confirm-btn" style="width:100%;padding:12px;background:#27ae60;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;">✅ Confirm Payment</button>' +
     '<button id="ton-cancel-btn" style="width:100%;padding:9px;background:#f0f0f0;color:#333;border:none;border-radius:8px;margin-top:6px;font-size:13px;cursor:pointer;">Cancel</button>' +
     '</div>';
   document.body.appendChild(dialog);
@@ -523,10 +523,10 @@ async function topUp(method) {
   document.getElementById('ton-confirm-btn').onclick = async function() {
     const txHash = document.getElementById('ton-tx-input').value.trim() || 'pending_' + Date.now();
     dialog.remove();
-    toast('Payment submit ho rahi hai...');
+    toast('Submitting payment...');
     try {
       await Api.post('/api/budget/ton-request', { txHash: txHash, amount: amount });
-      toast('Payment submit! Admin confirm karega aur balance add ho ga.');
+      toast('Payment submitted! Admin will confirm and add balance.');
     } catch (e) {
       toast(e.error || 'Submit failed', true);
     }
