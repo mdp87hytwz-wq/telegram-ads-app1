@@ -104,7 +104,7 @@ const PLAN_MULTIPLIER = {
   ultra_fast_pro: 2,
   ultra_fast_pro_max: 2.5
 };
-const PRICE_PER_VIEW_TOMAN = 5; // base price per view, adjust as needed
+const PRICE_PER_VIEW_TOMAN = 0.002; // 1 TON = 500 views (0.002 TON per view)
 
 function calcPrice(viewCount, plan) {
   const mult = PLAN_MULTIPLIER[plan] || 1;
