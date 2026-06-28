@@ -273,7 +273,7 @@ function viewCreateAd() {
 
 // ---------- Budget ----------
 function viewBudget() {
-  setTimeout(() => { if (!state.budget.transactions.length && state.budget.balance === 0) loadBudget().then(render); }, 0);
+  setTimeout(() => { if (!state.budgetLoaded) { state.budgetLoaded = true; loadBudget().then(render); } }, 0);
 
   const methods = [
     { id: 'ton', icon: '💎', label: 'Pay with TON' }
