@@ -273,7 +273,7 @@ function viewCreateAd() {
 
 // ---------- Budget ----------
 function viewBudget() {
-  if (!state.budget.transactions.length && state.budget.balance === 0) loadBudget().then(render);
+  if (!state.budget.transactions.length && state.budget.balance === 0) loadBudget().then(() => { const active = document.activeElement; render(); if (active && (active.tagName === "INPUT" || active.tagName === "TEXTAREA")) { setTimeout(() => active.focus(), 50); } });
 
   const methods = [
     { id: 'ton', icon: '💎', label: 'Pay with TON' }
