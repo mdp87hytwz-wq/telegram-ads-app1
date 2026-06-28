@@ -424,7 +424,7 @@ function attachHandlers() {
   });
 
   document.querySelectorAll('[data-plan]').forEach(el => {
-    el.addEventListener('click', async () => { state.plan = el.dataset.plan; await refreshPrice(); render(); });
+    el.addEventListener('click', async () => { state.plan = el.dataset.plan; await refreshPrice(); const priceEl = document.getElementById('price-display'); if (priceEl) priceEl.textContent = `${state.price.toLocaleString()} TON`; document.querySelectorAll('[data-plan]').forEach(p => p.classList.toggle('selected', p.dataset.plan === state.plan)); });
   });
 
   document.getElementById('f-views')?.addEventListener('input', async (e) => {
