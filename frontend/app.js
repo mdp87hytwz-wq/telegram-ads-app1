@@ -493,17 +493,48 @@ async function topUp(method) {
   const amount = Number(document.getElementById('f-amount').value);
   if (!amount || amount <= 0) { toast('Enter a valid amount first', true); return; }
   const MERCHANT = 'UQADuFF2Fy7NSrx36D9isoQ0CJx6dcX-0oxHkuRWyLxvng5N';
-  const msg = 'Send ' + amount + ' TON to:\n' + MERCHANT + '\n\nPhir TX hash copy karke neeche paste karein.';
-  const txHash = prompt(msg);
-  if (!txHash) return;
-  try {
-    const r = await Api.post('/api/budget/ton-verify', { amount, boc: txHash });
-    state.budget.balance = r.balance;
-    toast('Payment submit! Balance updated.');
-    render();
-  } catch (e) {
-    toast(e.error || 'Payment failed', true);
-  }
+  const qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent('ton://transfer/' + MERCHANT + '?amount=' + Math.floor(amount * 1e9));
+
+  // Remove existing dialog
+  const existing = document.getElementById('ton-dialog');
+  if (existing) existing.remove();
+
+  const dialog = document.createElement('div');
+  dialog.id = 'ton-dialog';
+  dialog.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px;';
+  dialog.innerHTML = '<div style="background:#fff;border-radius:16px;padding:20px;width:100%;max-width:360px;text-align:center;">' +
+    '<h3 style="margin:0 0 4px;font-size:17px;">💎 TON Payment</h3>' +
+    '<p style="color:#666;font-size:13px;margin:0 0 12px;">Send <b>' + amount + ' TON</b> to this address:</p>' +
+    '<img src="' + qrUrl + '" style="width:160px;height:160px;border-radius:8px;margin-bottom:12px;">' +
+    '<div style="background:#f5f5f5;border-radius:8px;padding:10px;margin-bottom:12px;word-break:break-all;font-size:11px;font-family:monospace;text-align:left;">' + MERCHANT + '</div>' +
+    '<button id="ton-copy-btn" style="width:100%;padding:10px;background:#0088cc;color:#fff;border:none;border-radius:8px;margin-bottom:8px;font-size:14px;font-weight:600;cursor:pointer;">📋 Copy Address</button>' +
+    '<p style="color:#666;font-size:12px;margin:8px 0 4px;text-align:left;">Payment ke baad TX Hash paste karein:</p>' +
+    '<input id="ton-tx-input" placeholder="TX Hash (optional)" style="width:100%;padding:9px;border:1px solid #ddd;border-radius:8px;margin-bottom:10px;box-sizing:border-box;font-size:12px;">' +
+    '<button id="ton-confirm-btn" style="width:100%;padding:12px;background:#27ae60;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;">✅ Payment Ki — Submit</button>' +
+    '<button id="ton-cancel-btn" style="width:100%;padding:9px;background:#f0f0f0;color:#333;border:none;border-radius:8px;margin-top:6px;font-size:13px;cursor:pointer;">Cancel</button>' +
+    '</div>';
+  document.body.appendChild(dialog);
+
+  document.getElementById('ton-copy-btn').onclick = function() {
+    navigator.clipboard.writeText(MERCHANT).then(function() {
+      document.getElementById('ton-copy-btn').textContent = '✅ Copied!';
+      setTimeout(function() { document.getElementById('ton-copy-btn').textContent = '📋 Copy Address'; }, 2000);
+    });
+  };
+
+  document.getElementById('ton-cancel-btn').onclick = function() { dialog.remove(); };
+
+  document.getElementById('ton-confirm-btn').onclick = async function() {
+    const txHash = document.getElementById('ton-tx-input').value.trim() || 'pending_' + Date.now();
+    dialog.remove();
+    toast('Payment submit ho rahi hai...');
+    try {
+      await Api.post('/api/budget/ton-request', { txHash: txHash, amount: amount });
+      toast('Payment submit! Admin confirm karega aur balance add ho ga.');
+    } catch (e) {
+      toast(e.error || 'Submit failed', true);
+    }
+  };
 }
 
 bootstrap();
