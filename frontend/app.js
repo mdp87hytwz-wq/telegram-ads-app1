@@ -41,7 +41,7 @@ async function bootstrap() {
     state.user = me.user;
   } catch (e) {
     console.error('Auth failed', e);
-    // auth warning disabled
+    toast('Could not verify Telegram session — running in limited mode', true);
   }
   await loadAds();
   render();
@@ -415,16 +415,26 @@ function attachHandlers() {
     el.addEventListener('click', () => {
       const id = el.dataset.channel;
       if (state.selectedChannels.has(id)) state.selectedChannels.delete(id); else state.selectedChannels.add(id);
-      render();
+      // Update UI without re-render
+      el.classList.toggle('selected', state.selectedChannels.has(id));
     });
   });
 
   document.querySelectorAll('[data-daily]').forEach(el => {
-    el.addEventListener('click', () => { state.dailyViewLimit = Number(el.dataset.daily); render(); });
+    el.addEventListener('click', () => {
+      state.dailyViewLimit = Number(el.dataset.daily);
+      document.querySelectorAll('[data-daily]').forEach(e => e.classList.toggle('active', e.dataset.daily == el.dataset.daily));
+    });
   });
 
   document.querySelectorAll('[data-plan]').forEach(el => {
-    el.addEventListener('click', async () => { state.plan = el.dataset.plan; await refreshPrice(); const priceEl = document.getElementById('price-display'); if (priceEl) priceEl.textContent = `${state.price.toLocaleString()} TON`; document.querySelectorAll('[data-plan]').forEach(p => p.classList.toggle('selected', p.dataset.plan === state.plan)); });
+    el.addEventListener('click', async () => {
+      state.plan = el.dataset.plan;
+      document.querySelectorAll('[data-plan]').forEach(e => e.classList.toggle('selected', e.dataset.plan === state.plan));
+      await refreshPrice();
+      const priceEl = document.getElementById('price-display');
+      if (priceEl) priceEl.textContent = `${state.price.toLocaleString()} TON`;
+    });
   });
 
   document.getElementById('f-views')?.addEventListener('input', async (e) => {
