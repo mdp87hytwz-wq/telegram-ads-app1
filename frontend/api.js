@@ -2,6 +2,11 @@ const tg = window.Telegram ? window.Telegram.WebApp : null;
 if (tg) {
   tg.ready();
   tg.expand();
+  if (tg.disableVerticalSwipes) tg.disableVerticalSwipes();
+}
+if (tg) {
+  tg.ready();
+  tg.expand();
 }
 
 const API_BASE = window.APP_CONFIG.API_BASE_URL;
