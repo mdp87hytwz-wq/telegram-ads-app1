@@ -41,7 +41,7 @@ async function bootstrap() {
     state.user = me.user;
   } catch (e) {
     console.error('Auth failed', e);
-    toast('Could not verify Telegram session — running in limited mode', true);
+    // auth warning disabled
   }
   await loadAds();
   render();
