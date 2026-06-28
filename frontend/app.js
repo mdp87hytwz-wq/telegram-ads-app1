@@ -492,11 +492,14 @@ async function submitAd() {
 async function topUp(method) {
   const amount = Number(document.getElementById('f-amount').value);
   if (!amount || amount <= 0) { toast('Enter a valid amount first', true); return; }
+  const MERCHANT = 'UQADuFF2Fy7NSrx36D9isoQ0CJx6dcX-0oxHkuRWyLxvng5N';
+  const msg = 'Send ' + amount + ' TON to:\n' + MERCHANT + '\n\nPhir TX hash copy karke neeche paste karein.';
+  const txHash = prompt(msg);
+  if (!txHash) return;
   try {
-    const r = await Api.post('/api/budget/topup', { amount, method });
+    const r = await Api.post('/api/budget/ton-verify', { amount, boc: txHash });
     state.budget.balance = r.balance;
-    state.budget.transactions.unshift(r.transaction);
-    toast(`Added ${amount.toLocaleString()} Toman via ${method}`);
+    toast('Payment submit! Balance updated.');
     render();
   } catch (e) {
     toast(e.error || 'Payment failed', true);
