@@ -57,6 +57,24 @@ bot.onText(/\/stats/, async (msg) => {
   } catch(e) { bot.sendMessage(msg.chat.id, '❌ Error: ' + e.message); }
 });
 
+bot.onText(/\/confirmpay (.+)/, async (msg, match) => {
+  if (!isAdmin(msg)) return bot.sendMessage(msg.chat.id, '❌ Access denied.');
+  const parts = match[1].trim().split(' ');
+  const userId = parts[0];
+  const amount = Number(parts[1]);
+  if (!userId || !amount) return bot.sendMessage(msg.chat.id, 'Usage: /confirmpay userId amount');
+  try {
+    const r = await fetch(`${BACKEND_URL}/api/admin/addbalance`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-admin-key': process.env.ADMIN_KEY || 'admin123' }, body: JSON.stringify({ userId, amount }) });
+    const data = await r.json();
+    bot.sendMessage(msg.chat.id, `✅ Confirmed! User ${userId} balance: ${data.balance} TON`);
+    bot.sendMessage(userId, `✅ *Payment Confirmed!*
+
+💎 ${amount} TON added to your balance.
+
+New balance: ${data.balance} TON`, { parse_mode: 'Markdown' });
+  } catch(e) { bot.sendMessage(msg.chat.id, '❌ Error: ' + e.message); }
+});
+
 bot.onText(/\/addbalance (.+)/, async (msg, match) => {
   if (!isAdmin(msg)) return bot.sendMessage(msg.chat.id, '❌ Access denied.');
   const parts = match[1].trim().split(' ');
