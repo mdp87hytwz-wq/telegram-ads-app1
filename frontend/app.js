@@ -556,4 +556,10 @@ document.addEventListener('focusout', function(e) {
   }
 });
 
+document.addEventListener('click', function(e) {
+  if (e.target.matches('input, textarea')) {
+    e.target.focus();
+    setTimeout(() => { e.target.scrollIntoView({block: 'center'}); }, 100);
+  }
+});
 bootstrap();
