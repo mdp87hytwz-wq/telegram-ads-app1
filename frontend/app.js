@@ -201,7 +201,10 @@ function viewCreateAd() {
 
       <div class="field">
         <label>Target specific channels</label>
-        <input type="text" id="f-channel-url" placeholder="t.me channel URL" />
+        <div id="channel-tags" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;">
+          ${[...state.selectedChannels].map(ch => '<span style="background:#0088cc;color:#fff;border-radius:20px;padding:4px 12px;font-size:13px;display:inline-flex;align-items:center;gap:6px;">' + ch + '<span onclick="removeChannel(\'' + ch + '\')" style="cursor:pointer;font-size:18px;line-height:1;">&times;</span></span>').join('')}
+        </div>
+        <input type="text" id="f-channel-url" placeholder="t.me/channel — Enter dabao" />
       </div>
 
       <div class="card">
@@ -459,6 +462,18 @@ function attachHandlers() {
   });
 
   // Friends
+  document.getElementById('f-channel-url')?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const val = e.target.value.trim();
+      if (val) {
+        state.selectedChannels.add(val);
+        e.target.value = '';
+        render();
+      }
+    }
+  });
+
   document.getElementById('btn-copy-ref')?.addEventListener('click', async () => {
     try {
       const r = await Api.get('/api/friends');
@@ -569,3 +584,8 @@ document.addEventListener('click', function(e) {
   }
 });
 bootstrap();
+
+function removeChannel(ch) {
+  state.selectedChannels.delete(ch);
+  render();
+}
