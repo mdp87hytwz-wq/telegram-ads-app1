@@ -8,7 +8,11 @@ const API_BASE = window.APP_CONFIG.API_BASE_URL;
 
 function authHeaders() {
   const initData = tg ? tg.initData : '';
-  return { 'X-Telegram-Init-Data': initData };
+  const userId = tg ? (tg.initDataUnsafe?.user?.id || '') : '';
+  return { 
+    'X-Telegram-Init-Data': initData,
+    'X-Telegram-User-Id': String(userId)
+  };
 }
 
 async function apiGet(pathName, params = {}) {
