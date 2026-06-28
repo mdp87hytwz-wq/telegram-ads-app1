@@ -289,7 +289,7 @@ function viewBudget() {
 
       <div class="field">
         <label>Add to your budget :</label>
-        <input type="text" inputmode="numeric" id="f-amount" placeholder="10000" />
+        <input type="text" inputmode="decimal" id="f-amount" placeholder="10000" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
       </div>
 
       <label style="font-weight:700;font-size:14px;">Payment method :</label>
