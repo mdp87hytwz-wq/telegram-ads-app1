@@ -79,7 +79,7 @@ function getOrCreateUser(data, tgUser) {
       firstName: tgUser.first_name || 'User',
       username: tgUser.username || '',
       photoUrl: tgUser.photo_url || '',
-      balance: 7000, // starter Toman balance, matches the "no ads yet" mock state
+      balance: 0, // starter Toman balance, matches the "no ads yet" mock state
       joinedAt: Date.now()
     };
   }
