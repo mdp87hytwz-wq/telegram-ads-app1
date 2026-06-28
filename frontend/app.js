@@ -231,7 +231,15 @@ function viewCreateAd() {
       </div>
 
       <h3 style="margin:20px 0 10px;">Preview</h3>
-      <div class="preview-banner" id="preview-banner">Fill the required fields to preview your ad</div>
+      <div class="preview-banner" id="preview-banner">
+        ${(() => {
+          const t = document.getElementById ? (document.getElementById('f-title')?.value || state.adTitle || '') : (state.adTitle || '');
+          const tx = document.getElementById ? (document.getElementById('f-text')?.value || state.adText || '') : (state.adText || '');
+          const u = document.getElementById ? (document.getElementById('f-url')?.value || state.adUrl || '') : (state.adUrl || '');
+          if (t && tx) return '<div style="padding:12px;"><strong style="font-size:15px;">' + t + '</strong><p style="margin:6px 0;font-size:13px;color:#555;">' + tx + '</p>' + (u ? '<span style="font-size:12px;color:#0088cc;">' + u + '</span>' : '') + '</div>';
+          return 'Fill the required fields to preview your ad';
+        })()}
+      </div>
 
       <div class="notice">
         <span class="dot dot-red">!</span>
