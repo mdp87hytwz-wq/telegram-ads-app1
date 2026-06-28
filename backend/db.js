@@ -21,7 +21,9 @@ function load() {
   if (!fs.existsSync(DB_FILE)) {
     fs.writeFileSync(DB_FILE, JSON.stringify(DEFAULT_DATA, null, 2));
   }
-  return JSON.parse(fs.readFileSync(DB_FILE, 'utf-8'));
+  const data = JSON.parse(fs.readFileSync(DB_FILE, "utf-8"));
+  if (data.users && data.users["dev-user"]) delete data.users["dev-user"];
+  return data;
 }
 
 function save(data) {
